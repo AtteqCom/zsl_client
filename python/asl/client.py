@@ -163,7 +163,7 @@ class Service:
         """
         pass
 
-    def call(self, task, decorators=[]):
+    def call(self, task, decorators=None):
         """
         Call given task on service layer.
 
@@ -178,6 +178,9 @@ class Service:
             contained in 'decorators' list
         :type task_result: TaskResult instance
         """
+        if decorators is None:
+            decorators = []
+
         task = self.apply_task_decorators(task, decorators)
 
         data = task.get_data()
