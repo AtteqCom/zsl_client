@@ -18,19 +18,24 @@ import urllib2
 
 import gearman
 
-def _random_string(length, allowed_characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz'):
+
+def _random_string(length, allowed_characters='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz'):
     return ''.join(random.choice(allowed_characters) for _ in range(length))
+
 
 class Task:
     @abstractmethod
     def get_name(self):
         pass
+
     name = property(get_name)
 
     @abstractmethod
     def get_data(self):
         pass
+
     data = property(get_data)
+
 
 class RawTask(Task):
     def __init__(self, name, data):
@@ -39,22 +44,28 @@ class RawTask(Task):
 
     def get_name(self):
         return self._name
+
     name = property(get_name)
 
     def get_data(self):
         return self._data
+
     data = property(get_data)
+
 
 class TaskResult:
     @abstractmethod
     def get_task(self):
         pass
+
     task = property(get_task)
 
     @abstractmethod
     def get_result(self):
         pass
+
     result = property(get_result)
+
 
 class RawTaskResult(TaskResult):
     def __init__(self, task, result):
@@ -68,6 +79,7 @@ class RawTaskResult(TaskResult):
     def get_result(self):
         return self._result
 
+
 class TaskDecorator(Task):
     def __init__(self, task):
         self._task = task
@@ -78,6 +90,7 @@ class TaskDecorator(Task):
     def get_data(self):
         return self._task.get_data()
 
+
 class JsonTask(Task, TaskDecorator):
     def get_name(self):
         return TaskDecorator.get_name(self)
@@ -85,6 +98,7 @@ class JsonTask(Task, TaskDecorator):
     def get_data(self):
         data = self._task.get_data()
         return json.dumps(data)
+
 
 class SecuredTask(Task, TaskDecorator):
     def get_name(self):
@@ -103,15 +117,18 @@ class SecuredTask(Task, TaskDecorator):
             }
         }
 
+
 class TaskResultDecorator:
     def __init__(self, task_result):
         assert isinstance(task_result, TaskResult)
         self._task_result = task_result
 
+
 class JsonTaskResult(TaskResult, TaskResultDecorator):
     def get_result(self):
         result = self._task_result.get_result()
         return json.loads(result)
+
 
 class ErrorTaskResult(TaskResult, TaskResultDecorator):
     def get_complete_result(self):
@@ -124,10 +141,11 @@ class ErrorTaskResult(TaskResult, TaskResultDecorator):
 
     def is_error(self):
         result = self._task_result.get_result()
-        return True if 'error'in result else False
+        return True if 'error' in result else False
 
     def get_error(self):
         return self._task_result.get_result()['error']
+
 
 class Service:
     @abstractmethod
@@ -143,7 +161,7 @@ class Service:
         '''
         pass
 
-    def call(self, task, decorators = []):
+    def call(self, task, decorators=[]):
         '''
         Call given task on service layer.
 
@@ -186,6 +204,7 @@ class Service:
     def get_secure_token(self):
         return self._security_config['SECURITY_TOKEN']
 
+
 class GearmanService(Service):
     def __init__(self, gearman_config, security_config=None):
         self._gearman_config = gearman_config
@@ -208,11 +227,12 @@ class GearmanService(Service):
                 'path': name,
                 'data': data
             }),
-            background = not self._blocking_status
+            background=not self._blocking_status
         )
 
         if self._blocking_status:
             return completed_job_request.result
+
 
 class WebService(Service):
     def __init__(self, web_config, security_config):
