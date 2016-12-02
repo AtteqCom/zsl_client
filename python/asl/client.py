@@ -18,8 +18,9 @@ import urllib2
 
 import gearman
 
+ALLOWED_CHARACTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz'
 
-def _random_string(length, allowed_characters='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz'):
+def _random_string(length, allowed_characters=ALLOWED_CHARACTERS):
     return ''.join(random.choice(allowed_characters) for _ in range(length))
 
 
