@@ -1,4 +1,4 @@
-'''
+"""
 :mod:`client.python.asl.client` -- ASL python client module
 ===========================================================
 
@@ -8,7 +8,7 @@ For usage of this module just use `import asl.client` and add the path `client/p
    :platform: Unix, Windows
    :synopsis: The Atteq Service Layer python client.
 .. moduleauthor:: Martin Babka <babka@atteq.com>
-'''
+"""
 from abc import abstractmethod
 
 import hashlib
@@ -18,7 +18,8 @@ import urllib2
 
 import gearman
 
-ALLOWED_CHARACTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz'
+ALLOWED_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz'
+
 
 def _random_string(length, allowed_characters=ALLOWED_CHARACTERS):
     return ''.join(random.choice(allowed_characters) for _ in range(length))
@@ -151,7 +152,7 @@ class ErrorTaskResult(TaskResult, TaskResultDecorator):
 class Service:
     @abstractmethod
     def _inner_call(self, name, data):
-        '''
+        """
         Make request to service layer and returns response to this request.
 
         :param name: name of the task
@@ -159,11 +160,11 @@ class Service:
         :param data: task data
 
         :return response to task request on service layer
-        '''
+        """
         pass
 
     def call(self, task, decorators=[]):
-        '''
+        """
         Call given task on service layer.
 
         :param task: task to be called. task will be decorated with
@@ -176,7 +177,7 @@ class Service:
         :return task_result: result of task call decorated with TaskResultDecorator's
             contained in 'decorators' list
         :type task_result: TaskResult instance
-        '''
+        """
         task = self.apply_task_decorators(task, decorators)
 
         data = task.get_data()
