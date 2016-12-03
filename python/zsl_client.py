@@ -9,6 +9,12 @@ For usage of this module just use `import zsl_client` and add the path `client/p
    :synopsis: The Atteq Service Layer python client.
 .. moduleauthor:: Martin Babka <babka@atteq.com>
 """
+# noinspection PyCompatibility
+from builtins import str
+# noinspection PyCompatibility
+from builtins import range
+# noinspection PyCompatibility
+from builtins import object
 from abc import abstractmethod
 
 import hashlib
@@ -234,7 +240,7 @@ class GearmanService(Service):
     def _inner_call(self, name, data):
         if data is None:
             data = "null"
-        elif not (isinstance(data, unicode) or isinstance(data, str)):
+        elif not isinstance(data, str):
             data = str(data)
 
         completed_job_request = self._gearman_client.submit_job(
@@ -264,7 +270,7 @@ class WebService(Service):
     def _inner_call(self, name, data):
         if data is None:
             data = "null"
-        elif not (isinstance(data, unicode) or isinstance(data, str)):
+        elif not isinstance(data, str):
             data = str(data)
 
         req = requests.post(self._service_layer_url + name, json=data)
