@@ -1,4 +1,4 @@
-from asl.client import RawTask, WebService, JsonTask, JsonTaskResult,\
+from zsl_client import RawTask, WebService, JsonTask, JsonTaskResult,\
     SecuredTask
 
 #

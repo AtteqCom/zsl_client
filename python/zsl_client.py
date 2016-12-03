@@ -25,7 +25,7 @@ def _random_string(length, allowed_characters=ALLOWED_CHARACTERS):
     return ''.join(random.choice(allowed_characters) for _ in range(length))
 
 
-class Task:
+class Task(object):
     @abstractmethod
     def get_name(self):
         pass
@@ -55,7 +55,7 @@ class RawTask(Task):
     data = property(get_data)
 
 
-class TaskResult:
+class TaskResult(object):
     @abstractmethod
     def get_task(self):
         pass
@@ -120,7 +120,7 @@ class SecuredTask(Task, TaskDecorator):
         }
 
 
-class TaskResultDecorator:
+class TaskResultDecorator(object):
     def __init__(self, task_result):
         assert isinstance(task_result, TaskResult)
         self._task_result = task_result
@@ -149,7 +149,7 @@ class ErrorTaskResult(TaskResult, TaskResultDecorator):
         return self._task_result.get_result()['error']
 
 
-class Service:
+class Service(object):
     @abstractmethod
     def _inner_call(self, name, data):
         """
@@ -199,7 +199,8 @@ class Service:
 
         return task
 
-    def apply_task_result_decorators(self, task_result, decorators):
+    @staticmethod
+    def apply_task_result_decorators(task_result, decorators):
         for d in decorators:
             if TaskResultDecorator in d.__bases__:
                 task_result = d(task_result)
