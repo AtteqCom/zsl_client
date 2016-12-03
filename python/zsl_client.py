@@ -3,7 +3,7 @@
 ===========================================================
 
 Python client which allows to connect to web and gearman service and delivers tasks to them.
-For usage of this module just use `import asl.client` and add the path `client/python` to `PYTHON_PATH`.
+For usage of this module just use `import zsl_client` and add the path `client/python` to `PYTHON_PATH`.
 
    :platform: Unix, Windows
    :synopsis: The Atteq Service Layer python client.
@@ -14,7 +14,7 @@ from abc import abstractmethod
 import hashlib
 import json
 import random
-import urllib2
+import requests
 
 import gearman
 
@@ -150,6 +150,9 @@ class ErrorTaskResult(TaskResult, TaskResultDecorator):
 
 
 class Service(object):
+    def __init__(self):
+        self._security_config = {}
+
     @abstractmethod
     def _inner_call(self, name, data):
         """
@@ -176,7 +179,7 @@ class Service(object):
 
         :return task_result: result of task call decorated with TaskResultDecorator's
             contained in 'decorators' list
-        :type task_result: TaskResult instance
+        :rtype TaskResult instance
         """
         if decorators is None:
             decorators = []
@@ -207,12 +210,19 @@ class Service(object):
 
         return task_result
 
-    def get_secure_token(self):
+    @property
+    def security_token(self):
         return self._security_config['SECURITY_TOKEN']
+
+    @security_token.setter
+    def security_token(self, value):
+        self._security_config['SECURITY_TOKEN'] = value
 
 
 class GearmanService(Service):
     def __init__(self, gearman_config, security_config=None):
+        super(GearmanService, self).__init__()
+
         self._gearman_config = gearman_config
         self._security_config = security_config
         self._gearman_client = gearman.client.GearmanClient(self._gearman_config['HOST'])
@@ -242,6 +252,8 @@ class GearmanService(Service):
 
 class WebService(Service):
     def __init__(self, web_config, security_config):
+        super(WebService, self).__init__()
+
         self._web_config = web_config
         self._security_config = security_config
         self._service_layer_url = self._web_config['SERVICE_LAYER_URL']
@@ -255,8 +267,5 @@ class WebService(Service):
         elif not (isinstance(data, unicode) or isinstance(data, str)):
             data = str(data)
 
-        req = urllib2.Request(self._service_layer_url + name, data, {'Content-Type': 'application/json'})
-        f = urllib2.urlopen(req)
-        returned_data = f.read()
-        f.close()
-        return returned_data
+        req = requests.post(self._service_layer_url + name, json=data)
+        return req.text
