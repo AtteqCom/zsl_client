@@ -65,13 +65,11 @@ class TaskResult(object):
     @abstractmethod
     def get_task(self):
         pass
-
     task = property(get_task)
 
     @abstractmethod
     def get_result(self):
         pass
-
     result = property(get_result)
 
 
@@ -99,7 +97,7 @@ class TaskDecorator(Task):
         return self._task.get_data()
 
 
-class JsonTask(Task, TaskDecorator):
+class JsonTask(TaskDecorator):
     def get_name(self):
         return TaskDecorator.get_name(self)
 
@@ -108,7 +106,7 @@ class JsonTask(Task, TaskDecorator):
         return json.dumps(data)
 
 
-class SecuredTask(Task, TaskDecorator):
+class SecuredTask(TaskDecorator):
     def get_name(self):
         return TaskDecorator.get_name(self)
 
